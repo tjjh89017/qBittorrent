@@ -134,6 +134,8 @@ namespace
         PEER_TURNOVER_CUTOFF,
         PEER_TURNOVER_INTERVAL,
 
+        SHARE_MODE_TARGET,
+
         ROW_COUNT
     };
 }
@@ -298,6 +300,9 @@ void AdvancedSettings::saveAdvancedSettings()
     session->setPeerTurnover(m_spinBoxPeerTurnover.value());
     session->setPeerTurnoverCutoff(m_spinBoxPeerTurnoverCutoff.value());
     session->setPeerTurnoverInterval(m_spinBoxPeerTurnoverInterval.value());
+
+    // Share Mode Target
+    session->setShareModeTarget(m_spinBoxShareModeTarget.value());
 }
 
 #if (LIBTORRENT_VERSION_NUM < 20000)
@@ -704,6 +709,13 @@ void AdvancedSettings::loadAdvancedSettings()
     m_spinBoxPeerTurnoverInterval.setValue(session->peerTurnoverInterval());
     addRow(PEER_TURNOVER_INTERVAL, (tr("Peer turnover disconnect interval") + ' ' + makeLink("https://www.libtorrent.org/reference-Settings.html#peer_turnover", "(?)"))
             , &m_spinBoxPeerTurnoverInterval);
+
+    // Share Mode Target
+    m_spinBoxShareModeTarget.setMinimum(1);
+    m_spinBoxShareModeTarget.setMaximum(1024);
+    m_spinBoxShareModeTarget.setValue(session->shareModeTarget());
+    addRow(SHARE_MODE_TARGET, (tr("Share Mode Target Ratio") + ' ' + makeLink("https://www.libtorrent.org/reference-Settings.html#share_mode_target	", "(?)"))
+            , &m_spinBoxShareModeTarget);
 }
 
 template <typename T>
