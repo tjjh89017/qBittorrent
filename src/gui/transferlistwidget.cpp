@@ -1072,13 +1072,13 @@ void TransferListWidget::displayListMenu(const QPoint &)
             : Qt::PartiallyChecked);
         listMenu->addAction(actionFirstLastPiecePrio);
 
-        actionShareMode->setCheckState(allSameShareMode
-            ? (shareMode ? Qt::Checked : Qt::Unchecked)
-            : Qt::PartiallyChecked);
-        listMenu->addAction(actionShareMode);
-
         addedPreviewAction = true;
     }
+
+    actionShareMode->setCheckState(allSameShareMode
+        ? (shareMode ? Qt::Checked : Qt::Unchecked)
+        : Qt::PartiallyChecked);
+    listMenu->addAction(actionShareMode);
 
     if (addedPreviewAction)
         listMenu->addSeparator();
