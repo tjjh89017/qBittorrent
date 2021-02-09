@@ -646,6 +646,12 @@ void TransferListWidget::setSelectedFirstLastPiecePrio(const bool enabled) const
         torrent->setFirstLastPiecePriority(enabled);
 }
 
+void TransferListWidget::setSelectedTorrentsShareMode(const bool enabled) const
+{
+    for (BitTorrent::Torrent *const torrent : asConst(getSelectedTorrents()))
+        torrent->setShareMode(enabled);
+}
+
 void TransferListWidget::setSelectedAutoTMMEnabled(const bool enabled) const
 {
     for (BitTorrent::Torrent *const torrent : asConst(getSelectedTorrents()))
@@ -840,6 +846,8 @@ void TransferListWidget::displayListMenu(const QPoint &)
     connect(actionSequentialDownload, &QAction::triggered, this, &TransferListWidget::setSelectedTorrentsSequentialDownload);
     auto *actionFirstLastPiecePrio = new TriStateAction(tr("Download first and last pieces first"), listMenu);
     connect(actionFirstLastPiecePrio, &QAction::triggered, this, &TransferListWidget::setSelectedFirstLastPiecePrio);
+    auto *actionShareMode = new TriStateAction(tr("Download in share mode"), listMenu);
+    connect(actionShareMode, &QAction::triggered, this, &TransferListWidget::setSelectedTorrentsShareMode);
     auto *actionAutoTMM = new TriStateAction(tr("Automatic Torrent Management"), listMenu);
     actionAutoTMM->setToolTip(tr("Automatic mode means that various torrent properties(eg save path) will be decided by the associated category"));
     connect(actionAutoTMM, &QAction::triggered, this, &TransferListWidget::setSelectedAutoTMMEnabled);
@@ -851,8 +859,8 @@ void TransferListWidget::displayListMenu(const QPoint &)
     bool needsPause = false, needsStart = false, needsForce = false, needsPreview = false;
     bool allSameSuperSeeding = true;
     bool superSeedingMode = false;
-    bool allSameSequentialDownloadMode = true, allSamePrioFirstlast = true;
-    bool sequentialDownloadMode = false, prioritizeFirstLast = false;
+    bool allSameSequentialDownloadMode = true, allSamePrioFirstlast = true, allSameShareMode = true;
+    bool sequentialDownloadMode = false, prioritizeFirstLast = false, shareMode = false;
     bool oneHasMetadata = false, oneNotSeed = false;
     bool allSameCategory = true;
     bool allSameAutoTMM = true;
@@ -898,6 +906,7 @@ void TransferListWidget::displayListMenu(const QPoint &)
             {
                 sequentialDownloadMode = torrent->isSequentialDownload();
                 prioritizeFirstLast = torrent->hasFirstLastPiecePriority();
+				shareMode = torrent->isShareMode();
             }
             else
             {
@@ -905,6 +914,8 @@ void TransferListWidget::displayListMenu(const QPoint &)
                     allSameSequentialDownloadMode = false;
                 if (prioritizeFirstLast != torrent->hasFirstLastPiecePriority())
                     allSamePrioFirstlast = false;
+                if (shareMode != torrent->isShareMode())
+                    allSameShareMode = false;
             }
         }
         else
@@ -943,7 +954,8 @@ void TransferListWidget::displayListMenu(const QPoint &)
 
         if (oneHasMetadata && oneNotSeed && !allSameSequentialDownloadMode
             && !allSamePrioFirstlast && !allSameSuperSeeding && !allSameCategory
-            && needsStart && needsForce && needsPause && needsPreview && !allSameAutoTMM)
+            && needsStart && needsForce && needsPause && needsPreview && !allSameAutoTMM
+            && !allSameShareMode)
             {
             break;
         }
@@ -1059,6 +1071,11 @@ void TransferListWidget::displayListMenu(const QPoint &)
             ? (prioritizeFirstLast ? Qt::Checked : Qt::Unchecked)
             : Qt::PartiallyChecked);
         listMenu->addAction(actionFirstLastPiecePrio);
+
+        actionShareMode->setCheckState(allSameShareMode
+            ? (shareMode ? Qt::Checked : Qt::Unchecked)
+            : Qt::PartiallyChecked);
+        listMenu->addAction(actionShareMode);
 
         addedPreviewAction = true;
     }
