@@ -434,6 +434,7 @@ Session::Session(QObject *parent)
     , m_peerTurnover(BITTORRENT_SESSION_KEY("PeerTurnover"), 4)
     , m_peerTurnoverCutoff(BITTORRENT_SESSION_KEY("PeerTurnoverCutOff"), 90)
     , m_peerTurnoverInterval(BITTORRENT_SESSION_KEY("PeerTurnoverInterval"), 300)
+    , m_shareModeTarget(BITTORRENT_SESSION_KEY("ShareModeTarget"), 3)
     , m_bannedIPs("State/BannedIPs"
                   , QStringList()
                   , [](const QStringList &value)
@@ -1430,6 +1431,8 @@ void Session::loadLTSettings(lt::settings_pack &settingsPack)
         settingsPack.set_int(lt::settings_pack::seed_choking_algorithm, lt::settings_pack::anti_leech);
         break;
     }
+
+    settingsPack.set_int(lt::settings_pack::share_mode_target, shareModeTarget());
 }
 
 void Session::configureNetworkInterfaces(lt::settings_pack &settingsPack)
@@ -2915,6 +2918,20 @@ void Session::setIPFilterFile(QString path)
         m_IPFilteringConfigured = false;
         configureDeferred();
     }
+}
+
+int Session::shareModeTarget() const
+{
+    return qBound(1, m_shareModeTarget.get(), 1024);
+}
+
+void Session::setShareModeTarget(const int num)
+{
+    if (num == m_shareModeTarget)
+        return;
+
+    m_shareModeTarget = num;
+    configureDeferred();
 }
 
 void Session::setBannedIPs(const QStringList &newList)

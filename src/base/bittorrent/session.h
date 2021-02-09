@@ -432,6 +432,8 @@ namespace BitTorrent
         void setBlockPeersOnPrivilegedPorts(bool enabled);
         bool isTrackerFilteringEnabled() const;
         void setTrackerFilteringEnabled(bool enabled);
+        int shareModeTarget() const;
+        void setShareModeTarget(int num);
         QStringList bannedIPs() const;
         void setBannedIPs(const QStringList &newList);
 #if defined(Q_OS_WIN)
@@ -739,6 +741,7 @@ namespace BitTorrent
         CachedSettingValue<int> m_peerTurnover;
         CachedSettingValue<int> m_peerTurnoverCutoff;
         CachedSettingValue<int> m_peerTurnoverInterval;
+        CachedSettingValue<int> m_shareModeTarget;
         CachedSettingValue<QStringList> m_bannedIPs;
 #if defined(Q_OS_WIN)
         CachedSettingValue<OSMemoryPriority> m_OSMemoryPriority;
