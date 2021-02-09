@@ -68,4 +68,9 @@ namespace BitTorrent
     {
         setFirstLastPiecePriority(!hasFirstLastPiecePriority());
     }
+
+    void Torrent::toggleShareMode()
+    {
+        setShareMode(!isShareMode());
+    }
 }
