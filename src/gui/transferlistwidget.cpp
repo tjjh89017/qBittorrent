@@ -888,10 +888,13 @@ void TransferListWidget::displayListMenu(const QPoint &)
         {
             firstAutoTMM = torrent->isAutoTMMEnabled();
             tagsInAll = torrent->tags();
+            shareMode = torrent->isShareMode();
         }
         else
         {
             tagsInAll.intersect(torrent->tags());
+            if (shareMode != torrent->isShareMode())
+                allSameShareMode = false;
         }
 
         if (firstAutoTMM != torrent->isAutoTMMEnabled())
@@ -906,7 +909,6 @@ void TransferListWidget::displayListMenu(const QPoint &)
             {
                 sequentialDownloadMode = torrent->isSequentialDownload();
                 prioritizeFirstLast = torrent->hasFirstLastPiecePriority();
-				shareMode = torrent->isShareMode();
             }
             else
             {
@@ -914,8 +916,6 @@ void TransferListWidget::displayListMenu(const QPoint &)
                     allSameSequentialDownloadMode = false;
                 if (prioritizeFirstLast != torrent->hasFirstLastPiecePriority())
                     allSamePrioFirstlast = false;
-                if (shareMode != torrent->isShareMode())
-                    allSameShareMode = false;
             }
         }
         else
