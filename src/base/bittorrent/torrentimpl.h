@@ -158,6 +158,7 @@ namespace BitTorrent
         bool isErrored() const override;
         bool isSequentialDownload() const override;
         bool hasFirstLastPiecePriority() const override;
+        bool isShareMode() const override;
         TorrentState state() const override;
         bool hasMetadata() const override;
         bool hasMissingFiles() const override;
@@ -214,6 +215,7 @@ namespace BitTorrent
         void setName(const QString &name) override;
         void setSequentialDownload(bool enable) override;
         void setFirstLastPiecePriority(bool enabled) override;
+        void setShareMode(bool enable) override;
         void pause() override;
         void resume(TorrentOperatingMode mode = TorrentOperatingMode::AutoManaged) override;
         void move(QString path) override;

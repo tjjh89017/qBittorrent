@@ -725,6 +725,11 @@ bool TorrentImpl::hasFirstLastPiecePriority() const
     return m_hasFirstLastPiecePriority;
 }
 
+bool TorrentImpl::isShareMode() const
+{
+    return static_cast<bool>(m_nativeStatus.flags & lt::torrent_flags::share_mode);
+}
+
 TorrentState TorrentImpl::state() const
 {
     return m_state;
@@ -1299,6 +1304,22 @@ void TorrentImpl::applyFirstLastPiecePriority(const bool enabled, const QVector<
     m_nativeHandle.prioritize_pieces(piecePriorities);
 }
 
+void TorrentImpl::setShareMode(const bool enable)
+{
+    if (enable)
+    {
+        m_nativeHandle.set_flags(lt::torrent_flags::share_mode);
+        m_nativeStatus.flags |= lt::torrent_flags::share_mode;  // prevent return cached value
+    }
+    else
+    {
+        m_nativeHandle.unset_flags(lt::torrent_flags::share_mode);
+        m_nativeStatus.flags &= ~lt::torrent_flags::share_mode;  // prevent return cached value
+    }
+
+    saveResumeData();
+}
+
 void TorrentImpl::fileSearchFinished(const QString &savePath, const QStringList &fileNames)
 {
     endReceivedMetadataHandling(savePath, fileNames);
@@ -1645,6 +1666,7 @@ void TorrentImpl::handleSaveResumeDataAlert(const lt::save_resume_data_alert *p)
         // resume data if there is no metadata, otherwise they won't be
         // restored if qBittorrent quits before the metadata are retrieved:
         resumeData["qBt-sequential"] = isSequentialDownload();
+        resumeData["qBt-shareMode"] = isShareMode();
 
         resumeData["qBt-addedTime"] = addedTime().toSecsSinceEpoch();
     }
